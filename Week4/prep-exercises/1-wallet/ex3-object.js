@@ -4,6 +4,9 @@ function createWallet(name, cash = 0) {
   return {
     _name: name,
     _cash: cash,
+    _dailyallowance: 40,
+    _dailyWithdrawals:0,
+
 
     deposit: function (amount) {
       this._cash += amount;
@@ -14,8 +17,13 @@ function createWallet(name, cash = 0) {
         console.log(`Insufficient funds!`);
         return 0;
       }
+      if(this._dailyWithdrawals + amount > this._dailyallowance){
+        console.log('Insufficient allowance');
+    return 0;
+  }
 
       this._cash -= amount;
+      this._dailyWithdrawals += amount;
       return amount;
     },
 
@@ -27,6 +35,16 @@ function createWallet(name, cash = 0) {
       );
       const withdrawnAmount = this.withdraw(amount);
       wallet.deposit(withdrawnAmount);
+    },
+
+    setDailyAllowance: function ( newAllowance){
+      this._dailyallowance = newAllowance;
+      console.log(`Daily allowance is : ${eurosFormatter.format(newAllowance)}`);
+    },
+
+    resetDailyAllowance : function(){
+      this._dailyWithdrawals = 0;
+      console.log(`The Daily withdrawlas resetted `);
     },
 
     reportBalance: function () {
@@ -47,14 +65,14 @@ function main() {
   const walletJane = createWallet('Jane', 20);
 
   walletJack.transferInto(walletJoe, 50);
-  walletJane.transferInto(walletJoe, 25);
-
+  walletJack.setDailyAllowance(80);
   walletJane.deposit(20);
   walletJane.transferInto(walletJoe, 25);
 
   walletJack.reportBalance();
   walletJoe.reportBalance();
   walletJane.reportBalance();
+  
 }
 
 main();
